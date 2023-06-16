@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 
 	// Read
 	vtkStructuredPointsReader* reader = vtkStructuredPointsReader::New();
-	reader->SetFileName("../data/testData2.vtk");
+	reader->SetFileName("../data/testData1.vtk");
 	reader->Update();
 
 	vtkTransform* transform = vtkTransform::New();
@@ -88,18 +88,18 @@ int main(int argc, char** argv)
 	*/
 
 	// testData1
-	/*
+	
 	int xSize = 10;  // Number of points in x-direction
 	int ySize = 10;  // Number of points in y-direction
 	int zSize = 2;  // Number of points in z-direction
-	*/
+	
 
 	// testData2
-//	/*
+	/*
 	int xSize = 30;  // Number of points in x-direction
 	int ySize = 30;  // Number of points in y-direction
 	int zSize = 2;  // Number of points in z-direction
-//	*/
+	*/
 
 	// carotid
 	/*
@@ -114,7 +114,7 @@ int main(int argc, char** argv)
 	*/
 
 	// testData1
-	/*
+	
 	int maxX = 36;
 	int minX = 0;
 	int maxY = 36;
@@ -123,10 +123,10 @@ int main(int argc, char** argv)
 	int minZ = 0;
 	double maxProg = 100;
 	double step = 0.01;
-	*/
+	
 
 	// testData2
-//	/*
+	/*
 	int maxX = 357;
 	int minX = 0;
 	int maxY = 357;
@@ -135,7 +135,7 @@ int main(int argc, char** argv)
 	int minZ = 0;
 	double maxProg = 100;
 	double step = 0.1;
-	//	*/
+		*/
 
 		// Compute the spacing between the grid points
 	double xSpacing = (static_cast<double>(maxX) - minX) / (xSize - 1);
@@ -167,22 +167,17 @@ int main(int argc, char** argv)
 	streamline1->SetMaximumPropagation(maxProg);
 	streamline1->SetIntegrationStepUnit(step);
 	streamline1->Update();
+	
+	// Streamline visualization
+	vtkPolyDataMapper * streamlineMapper = vtkPolyDataMapper::New();
+	streamlineMapper->SetInputConnection(streamline1->GetOutputPort());
+	streamlineMapper->ScalarVisibilityOff();
 
-	// Hedgehog setup.
-	vtkHedgeHog* hhog = vtkHedgeHog::New();
-	hhog->SetInputConnection(streamline1->GetOutputPort());
-	hhog->SetScaleFactor(1);
-	hhog->Update();
+	vtkActor* streamlineActor = vtkActor::New();
+	streamlineActor->SetMapper(streamlineMapper);
+	streamlineActor->GetProperty()->SetColor(0.0, 0.0, 1.0); // Set color to green
 
-	vtkPolyDataMapper* hedgeHogMapper = vtkPolyDataMapper::New();
-	hedgeHogMapper->SetInputConnection(hhog->GetOutputPort());
-	hedgeHogMapper->SetScalarRange(0.0, 1.0);
-	hedgeHogMapper->SetLookupTable(lut);
-
-	vtkActor* hedgeHogActor = vtkActor::New();
-	hedgeHogActor->SetMapper(hedgeHogMapper);
-
-	aRenderer->AddActor(hedgeHogActor);
+	aRenderer->AddActor(streamlineActor);
 
 	// Set a background color for the renderer and set the size of the
 	// render window (expressed in pixels).
